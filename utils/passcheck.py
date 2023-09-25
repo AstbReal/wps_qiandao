@@ -11,7 +11,7 @@ class PassCheck():
 
     def __init__(self) -> None:
         #使用cpu运行，方便没有gpu放入服务器运行
-        net = torch.load("../resources/zheye.pt", map_location=torch.device('cpu'))
+        net = torch.load("resources/zheye.pt", map_location=torch.device('cpu'))
         net.eval()
 
 
