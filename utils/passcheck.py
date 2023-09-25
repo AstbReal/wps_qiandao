@@ -3,16 +3,17 @@ import sklearn.mixture
 from PIL import Image, ImageFont, ImageDraw
 import numpy
 import torch
+import requests
+
 import torch.nn as nn
 import torch.nn.functional as F
-import requests
 
 class PassCheck():
 
     def __init__(self) -> None:
         #使用cpu运行，方便没有gpu放入服务器运行
-        net = torch.load("resources/zheye.pt", map_location=torch.device('cpu'))
-        net.eval()
+        self.net = torch.load("resources/zheye.pt", map_location=torch.device('cpu'))
+        self.net.eval()
 
 
     def CAPTCHA_to_data(self,filename, width, height):
@@ -65,32 +66,6 @@ class PassCheck():
             bgdr.ellipse((x - 3, y - 3, x + 3, y + 3), fill="red", outline='red')
         return im
 
-
-    class Net(nn.Module):
-        def __init__(self):
-            super(self.Net, self).__init__()
-            self.conv1 = nn.Conv2d(1, 128, 3, padding=1)
-            self.conv2 = nn.Conv2d(128, 64, 3, padding=1)
-            self.conv3 = nn.Conv2d(64, 32, 3, padding=1)
-            self.fc1 = nn.Linear(32 * 25, 40)
-            self.fc2 = nn.Linear(40, 2)
-
-        def forward(self, x):
-            x = F.max_pool2d(F.relu(self.conv1(x)), 2)
-            x = F.max_pool2d(F.relu(self.conv2(x)), 2)
-            x = F.max_pool2d(F.relu(self.conv3(x)), 2)
-            x = x.view(-1, self.num_flat_features(x))
-            x = F.relu(self.fc1(x))
-            x = self.fc2(x)
-            return x
-
-        def num_flat_features(self, x):
-            size = x.size()[1:]  # all dimensions except the batch dimension
-            num_features = 1
-            for s in size:
-                num_features *= s
-            return num_features
-
     def data_to_image(self,d):
         '''
         convert 2darray to image object.
@@ -139,3 +114,29 @@ class PassCheck():
         zuobiao_list = self.get_daoli_xy_list(f"./captcha.jpg", 350, 88)
         captcha_pos = '|'.join([f"{x},{y}" for x, y in zuobiao_list])
         return captcha_pos
+    
+
+class Net(nn.Module):
+        def __init__(self):
+            super(Net, self).__init__()
+            self.conv1 = nn.Conv2d(1, 128, 3, padding=1)
+            self.conv2 = nn.Conv2d(128, 64, 3, padding=1)
+            self.conv3 = nn.Conv2d(64, 32, 3, padding=1)
+            self.fc1 = nn.Linear(32 * 25, 40)
+            self.fc2 = nn.Linear(40, 2)
+
+        def forward(self, x):
+            x = F.max_pool2d(F.relu(self.conv1(x)), 2)
+            x = F.max_pool2d(F.relu(self.conv2(x)), 2)
+            x = F.max_pool2d(F.relu(self.conv3(x)), 2)
+            x = x.view(-1, self.num_flat_features(x))
+            x = F.relu(self.fc1(x))
+            x = self.fc2(x)
+            return x
+
+        def num_flat_features(self, x):
+            size = x.size()[1:]  # all dimensions except the batch dimension
+            num_features = 1
+            for s in size:
+                num_features *= s
+            return num_features

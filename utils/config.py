@@ -1,5 +1,6 @@
 import json
 import os
+import argparse
 
 """
 这里是配置信息的类，方便解耦合。
@@ -76,11 +77,16 @@ USERS_CLOSERS为想关闭的用户，避免重复填写USERS_DATA，其格式如
 class Config:
 
     def __init__(self) -> None:
-        # 用户数据列表
+        # # CLI参数优先级最高其次是环境
+        # parser = argparse.ArgumentParser()
+        # parser.add_argument("-d","--users_data",help="请输入用户配置信息")
+        # args = parser.parse_args()
+        # # 用户数据列表
+        # if(args):
+        #     self.datas_str = args.users_data
+        # elif(os.getenv("USERS_DATA")):
         self.datas_str = os.getenv('USERS_DATA', '[]')
-
-        # print(f'CLOSERS:{self.closers_str}and type{type(self.closers_str)}')
-
+            
         # 书写检查
         assert self.datas_str != '[]' and len(
             self.datas_str) != 0, "Users data is empty!"
