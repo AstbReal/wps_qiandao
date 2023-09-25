@@ -1,9 +1,9 @@
 import requests
 from urllib.parse import quote
 
-from config import Config
-from notice import MsgSender
-from passcheck import PassCheck
+from utils.config import Config
+from utils.notice import MsgSender
+from utils.passcheck import PassCheck
 
 class Checkin:
 
